@@ -1,0 +1,46 @@
+version: "3"
+
+volumes:
+  data: {}
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-dev
+    volumes:
+      - .:/app/
+    environment:
+      - DJANGO_DB_NAME=forum_api
+      - DJANGO_DB_USER=andy
+      - DJANGO_DB_PASSWORD=password
+      - DJANGO_DB_HOST=db
+      - DJANGO_DB_PORT=3306
+      - DJANGO_SECRET_KEY=secret_key
+      - DJANGO_ALGORITHM=HS256
+    ports:
+      - 8000:8000
+    restart: always
+    depends_on:
+      - db
+    command: >-
+      sh -c 'python manage.py check_db_connection &&
+             python manage.py makemigrations --settings=config.settings.local &&
+             python manage.py migrate --settings=config.settings.local &&
+             python manage.py runserver 0.0.0.0:8000 --setting=config.settings.local'
+  db:
+    image: mysql
+    platform: linux/x86_64
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=andy
+      - MYSQL_DATABASE=forum_api
+      - MYSQL_PASSWORD=password
+    ports:
+      - 3306:3306
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+      - --default-authentication-plugin=mysql_native_password
+    volumes:
+      - data:/var/lib/mysqls
