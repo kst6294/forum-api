@@ -15,6 +15,13 @@ class Question(models.Model):
         on_delete=models.CASCADE,
     )
 
+    like = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through="Like",
+        related_name="likes"
+    )
+
+
     def __str__(self):
         return self.title
     
@@ -36,3 +43,16 @@ class Comment(models.Model):
 
     class Meta:
         db_table = "comments"
+
+
+class Like(models.Model):
+    """ 좋아요 모델 """
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="like_user")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="like_question"
+    )
+
+    class Meta:
+        db_table = "likes"

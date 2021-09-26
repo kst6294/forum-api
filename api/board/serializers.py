@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework.fields import ReadOnlyField
-from api.board.models import Comment, Question
+from rest_framework.response import Response
+
+from api.board.models import Comment, Like, Question
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -10,8 +12,8 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ('id', 'user', 'title', 'content', 'created_at', 'updated_at')
-        ReadOnlyField = ('id', 'user', 'created_at', 'updated_at')
+        fields = ('id', 'user', 'title', 'content', 'created_at', 'updated_at',)
+        ReadOnlyField = ('id', 'user', 'created_at', 'updated_at', )
 
 
     def create(self, validated_data):
@@ -30,8 +32,41 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'question', 'content', 'created_at', 'updated_at')
         ReadOnlyField = ('id', 'user', 'created_at', 'updated_at')
 
+
     def create(self, validated_data):
         comment = Comment.objects.create(**validated_data, user=self.context['request'].user)
         comment.save()
         return comment
 
+
+class LikeSerializer(serializers.ModelSerializer):
+    """ 좋아요 시리얼라이저 """
+    user = serializers.ReadOnlyField(source='user.name')
+
+    class Meta:
+        model = Like
+        fields = ('id', 'question', 'user',)  
+
+
+    def create(self, validated_data):
+        if Like.objects.filter(**validated_data).exists():
+            Like.objects.filter(**validated_data).delete()
+            return Response()`1`
+        like = Like.objects.create(**validated_data, user=self.context['request'].user)
+        like.save()
+        print('==========================')
+        print(like)
+        print('==========================')
+        return like
+        return {}
+        # validate_like = Like.objects.filter(
+        #     question=validated_data.get('question'),
+        #     user=self.context['request'].user
+        # )
+
+        # if validate_like.exists():
+        #     validate_like.delete()
+        #     return {"a":"bv"}
+
+        # like = Like.objects.create(**validated_data, user=self.context['request'].user)
+        # return {"a":"a"}
