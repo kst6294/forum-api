@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from rest_framework import status
+from rest_framework.serializers import Serializer
 from rest_framework.test import APIClient
 
 from api.board import models, serializers
@@ -13,6 +14,9 @@ LIST_CREATE_QUESTION_URL = reverse('board:question-list-create')
 
 def detail_url(question_id):
     return reverse('board:question-detail', args=[question_id])
+
+def sample_user(email="t1@t.com", password="112134"):
+    return get_user_model().objects.create(email, password)
 
 def sample_question(user, title="sample title", content="sample content"):
     return models.Question.objects.create(user=user, title=title, content=content)
@@ -65,7 +69,7 @@ class QuestionApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
     
-    def test_retrieve_post_detail(self):
+    def test_retrieve_question_detail(self):
         """ 질문 상세 확인 """
 
         question = sample_question(user=self.user)
@@ -79,7 +83,7 @@ class QuestionApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    def test_update_post(self):
+    def test_update_question(self):
         """ 질문 수정 """
 
         payload = {
@@ -93,7 +97,7 @@ class QuestionApiTests(TestCase):
         
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_delete_post(self):
+    def test_delete_question(self):
         """ 질문 삭제 """
 
         question = sample_question(user=self.user)
@@ -103,6 +107,23 @@ class QuestionApiTests(TestCase):
         res=self.client.delete(url)
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_filter_question_with_keyword(self):
+        """ 질문 검색 """
+
+        question1 = models.Question.objects.create(user=self.user, title="t", content="ttt")
+        question2 = models.Question.objects.create(user=self.user, title="b", content="ddsafsdf")
+
+        res = self.client.get(LIST_CREATE_QUESTION_URL, {'keyword' : 't'})
+
+        serializer1 = serializers.QuestionSerializer(question1)
+        serializer2 = serializers.QuestionSerializer(question2)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn(serializer1.data, res.data)
+        self.assertNotIn(serializer2.data, res.data)
+
+
 
 
 
