@@ -9,6 +9,10 @@ from api.board import models, serializers
 
 
 CREATE_COMMENT_URL = reverse('board:comment-create')
+# LIST_COMMENT_URL = reverse('board:question-comment-list')
+
+def detail_url(question_id):
+    return reverse('board:comment-list', args=[question_id])
 
 
 def sample_user(email="kst6294@gmail.com", password="123123"):
@@ -44,3 +48,24 @@ class CommentApiTests(TestCase):
         res = self.client.post(CREATE_COMMENT_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+
+    def test_list_comments_on_question(self):
+        """ 특정한 질문에 달려있는 댓글 보여주기 """
+
+        question = sample_question(user=self.user)
+
+        user2 = get_user_model().objects.create(email="asdf@asdf.com", password="qweasd")
+
+        comment1 = models.Comment.objects.create(user=user2, question=question, content="tttt")
+        comment2 = models.Comment.objects.create(user=user2, question=question, content="asdf")
+
+        url = detail_url(question.id)
+        res = self.client.get(url)
+
+        comments = models.Comment.objects.filter(question=question)
+
+        serializer = serializers.CommentSerializer(comments, many=True)
+        
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)

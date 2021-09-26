@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.fields import ReadOnlyField
 from rest_framework.response import Response
 
 from api.board.models import Comment, Like, Question
@@ -51,7 +50,7 @@ class LikeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         if Like.objects.filter(**validated_data).exists():
             Like.objects.filter(**validated_data).delete()
-            return Response()`1`
+            return Response()
         like = Like.objects.create(**validated_data, user=self.context['request'].user)
         like.save()
         print('==========================')

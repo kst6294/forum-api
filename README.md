@@ -1,7 +1,11 @@
 # board-api
+
+<br>
+
+# Questions
 ## Show Questions List
 
-- URL: `/api/questions`
+- URL: `/api/board/questions`
 
 - Method:  `GET` 
 
@@ -24,7 +28,7 @@
 
 ## Create Question
 
-- URL: `/api/questions`
+- URL: `/api/board/questions`
 
 - Method: `POST` 
 
@@ -34,11 +38,6 @@
 
 - Sample Call: <br>
   ```
-  curl -XPOST\
-  -H "Content-Type: application/json"\
-  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjMyNTM1Nzk0LCJqdGkiOiI5MWI4MTk1NTI3Yzk0ZmU5ODlkNDliMjdlNGQ4MjMyYyIsInVzZXJfaWQiOjJ9.X86zWl88r3YHNlAkGuuMGNdm3iDIu-zZKMawp63EkQI"\
-  -d '{"title":"title1", "content":"content1"}'\
-  0.0.0.0:8000/api/questions 
   ```
 
 - Success Response
@@ -56,7 +55,7 @@
 
 ## Show Question Detail
 
-- URL: `/api/questions/<:id>`
+- URL: `/api/board/questions/<:id>`
 
 - Method: `GET` 
 
@@ -93,7 +92,7 @@
 
 ## Modify Question Detail
 
-- URL: `/api/questions/<:id>`
+- URL: `/api/board/questions/<:id>`
 
 - Method: `PATCH` 
 
@@ -131,36 +130,78 @@
 <br>
 <br>
 
-## Delete Question Detail
+## delete question detail
 
-- URL: `/api/questions/<:id>`
+- url: `/api/board/comments`
 
-- Method: `DELETE` 
+- method: `delete` 
 
-- URL params: <br>
-  Required: `id=[integer]`
+- url params: <br>
+  required: `id=[integer]`
 
-- Request Header: <br>
-`Authorization: Bearer Token {access token}`<br>
+- request header: <br>
+`authorization: bearer token {access token}`<br>
 
-- Sample Call: <br>
+- sample call: <br>
   ```
-  curl -XPOST\
-  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjMyNTM1Nzk0LCJqdGkiOiI5MWI4MTk1NTI3Yzk0ZmU5ODlkNDliMjdlNGQ4MjMyYyIsInVzZXJfaWQiOjJ9.X86zWl88r3YHNlAkGuuMGNdm3iDIu-zZKMawp63EkQI"\
+  curl -xpost\
+  -h "authorization: bearer eyj0exaioijkv1qilcjhbgcioijiuzi1nij9.eyj0b2tlbl90exblijoiywnjzxnziiwizxhwijoxnjmyntm1nzk0lcjqdgkioii5mwi4mtk1nti3yzk0zmu5odlkndlimjdlngq4mjmyyyisinvzzxjfawqiojj9.x86zwl88r3yhnlakguumgndm3idiu-zzkmawp63ekqi"\
   0.0.0.0:8000/api/questions/7
   ```
 
-- Success Response
+- success response
     
-  - Code: `204 NO CONTENT` <br> 
+  - code: `204 no content` <br> 
   content:
 
-- Error Response:<br>
-  - Code: `401 UNAUTORIZED` <br>
-    Content: `{"detail":"Authentication credentials were not provided."}` <br>
+- error response:<br>
+  - code: `401 unautorized` <br>
+    content: `{"detail":"authentication credentials were not provided."}` <br>
 
-  - Code: `403 FORBIDDEN` <br>
-    Content: `{"detail":"You do not have permission to perform this action."}`
+  - code: `403 forbidden` <br>
+    content: `{"detail":"you do not have permission to perform this action."}`
 
-  - Code: `404 NOT FOUND` <br>
-    Content: `{"detail":"Not found."}`
+  - code: `404 not found` <br>
+    content: `{"detail":"not found."}`
+
+<br>
+<br>
+
+# Comments
+## create comment
+- url: `/api/board/comments`
+
+- method: `post` 
+
+- url params: <br>
+  unrequired: 
+
+- request header: <br>
+`authorization: bearer token {access token}`<br>
+`Content-Type: application/json`
+
+- sample call: <br>
+  ```
+  ```
+
+- success response
+    
+  - code: `204 no content` <br> 
+  content:
+
+- error response:<br>
+  - code: `401 unautorized` <br>
+    content: `{"detail":"authentication credentials were not provided."}` <br>
+
+  - code: `403 forbidden` <br>
+    content: `{"detail":"you do not have permission to perform this action."}`
+
+  - code: `404 not found` <br>
+    content: `{"detail":"not found."}`
+
+<br>
+
+## show comments on question
+## search comments
+## like
+## unlike

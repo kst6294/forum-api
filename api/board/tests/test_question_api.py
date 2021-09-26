@@ -12,6 +12,7 @@ from api.board import models, serializers
 LIST_CREATE_QUESTION_URL = reverse('board:question-list-create')
 
 
+
 def detail_url(question_id):
     return reverse('board:question-detail', args=[question_id])
 
@@ -122,8 +123,3 @@ class QuestionApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn(serializer1.data, res.data)
         self.assertNotIn(serializer2.data, res.data)
-
-
-
-
-

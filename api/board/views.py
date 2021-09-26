@@ -1,9 +1,5 @@
-from django.db.models import query
-from django.db.models.query import QuerySet
-
-from rest_framework import generics, viewsets
+from rest_framework import generics
 from rest_framework.mixins import DestroyModelMixin
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from api.board import serializers
@@ -17,15 +13,15 @@ class QuestionListCreateAPIView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
-        """ 질문 검색 """
 
-        keyword = self.request.query_params.get('keyword')
-        queryset = self.queryset
+        search = self.request.query_params
 
-        if keyword:
-            queryset = queryset.filter(title__icontains=keyword)
-
-        return queryset.all()
+        if search.get('title', None):
+            return self.queryset.filter(title__icontains=search['title'])
+        elif search.get('content', None):
+            return self.queryset.filter(content__icontains=search['content'])
+        else:
+            return self.queryset.all()
 
 
 class QuestionDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -34,10 +30,16 @@ class QuestionDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
 
-class CommentCreateAPIView(generics.CreateAPIView):
+class CommentListCreateAPIView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
     permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        """ 질문으로 filter 한 댓글 쿼리셋 """
+        if self.kwargs['pk']:
+            return self.queryset.filter(question_id=self.kwargs['pk'])
+        return self.queryset
 
 
 class LikeCreateAPIView(generics.ListCreateAPIView, DestroyModelMixin):
