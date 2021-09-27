@@ -46,26 +46,5 @@ class LikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = ('id', 'question', 'user',)  
 
-
     def create(self, validated_data):
-        if Like.objects.filter(**validated_data).exists():
-            Like.objects.filter(**validated_data).delete()
-            return Response()
-        like = Like.objects.create(**validated_data, user=self.context['request'].user)
-        like.save()
-        print('==========================')
-        print(like)
-        print('==========================')
-        return like
-        return {}
-        # validate_like = Like.objects.filter(
-        #     question=validated_data.get('question'),
-        #     user=self.context['request'].user
-        # )
-
-        # if validate_like.exists():
-        #     validate_like.delete()
-        #     return {"a":"bv"}
-
-        # like = Like.objects.create(**validated_data, user=self.context['request'].user)
-        # return {"a":"a"}
+        return Like.objects.create(**validated_data, user=self.context['request'].user)

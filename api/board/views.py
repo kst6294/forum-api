@@ -1,6 +1,7 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.mixins import DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
 
 from api.board import serializers
 from api.board.models import Comment, Question, Like
@@ -16,6 +17,7 @@ class QuestionListCreateAPIView(generics.ListCreateAPIView):
 
         search = self.request.query_params
 
+        # if 문 줄일 수 있는 방법 찾아보기...
         if search.get('title', None):
             return self.queryset.filter(title__icontains=search['title'])
         elif search.get('content', None):
@@ -42,39 +44,16 @@ class CommentListCreateAPIView(generics.ListCreateAPIView):
         return self.queryset
 
 
-class LikeCreateAPIView(generics.ListCreateAPIView, DestroyModelMixin):
+class LikeCreateAPIView(generics.CreateAPIView):
     queryset = Like.objects.all()
     serializer_class = serializers.LikeSerializer
     permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user, question_id=self.request.data.get('question'))
     
-
-    # def get_queryset(self):
-    #     return self.queryset.filter(
-    #         user=self.request.user,
-    #         question_id=self.request.data.get('question')
-    #         )
-
-    # def perform_create(self, serializer, *args, **kwargs):
-    #     if self.get_queryset().exists():
-    #         self.get_queryset().delete()
-    #         return {}
-
-
-
-
-
-
-
-        # question_id = self.request.data.get('question')
-        # Like.objects.create(user=self.request.user, question=Question.objects.get(id=question_id))
-        # print('11======================')
-        # serializer.save(question_id=self.request.data.get('question'))
-
-        # serializer.save(
-        #     question_id=self.request.data.get('question')
-        # )
-
-# class LikeRetrieveAPIView(generics.RetrieveAPIView):
-#     queryset = Like.objects.all()
-#     serializer_class = serializers.LikeSerializer
-#     permission_classes = (IsAuthenticated,)
+    def create(self, request, *args, **kwargs):
+        if self.queryset.exists():
+            self.queryset.delete()
+            return Response(status.HTTP_204_NO_CONTENT)
+        return super().create(request, *args, **kwargs)
