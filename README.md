@@ -2,6 +2,86 @@
 
 <br>
 
+# Users
+
+## Create User
+
+- URL: `/api/user/signup`
+- Method: `POST` 
+- URL params: `Unrequired`
+- Request Header: 
+- Request Data: `{"email" : "test@test.com", "password" : "123123}`
+- Sample Call: <br>
+  ```
+  curl --location --request POST '0.0.0.0:8000/api/user/signup' \
+  --header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjMyODMzOTA0LCJqdGkiOiI3M2MzZTY4OGQ1ODg0NmMzYmVlOWYxM2Q1YTEwMDg5YSIsInVzZXJfaWQiOjF9.d0zwT-h4U3QHRrJ1TsO7XSV_ISmtnTkaK9xmhy1qnyc' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{"email" : "test@test.com", "password" : "123123", "name" : "asdf"}'
+  ```
+- Success Response
+  - Code: `201` <br> 
+  content:  `{"email":"asdfeqwerq@test.com","name":"asdf","created_at":"2021-09-28T09:02:14.729250Z","updated_at":"2021-09-28T09:02:14.729271Z"}`
+- Error Response:
+  - Code: `400 Bad Request` <br>
+  content: `{"email":["user with this email already exists."]}`<br>
+  content: `{"email":["This field is required."]}`
+
+
+<br>
+<br>
+
+## Obtain Token
+
+- URL: `/api/user/signin`
+- Method: `POST` 
+- URL params: `Unrequired`
+- Request Header: 
+- Request Data: `{"email" : "test@test.com", "password" : "123123}`
+- Sample Call: <br>
+  ```
+  curl --location --request POST '0.0.0.0:8000/api/user/signin' \
+  --header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjMyODMzOTA0LCJqdGkiOiI3M2MzZTY4OGQ1ODg0NmMzYmVlOWYxM2Q1YTEwMDg5YSIsInVzZXJfaWQiOjF9.d0zwT-h4U3QHRrJ1TsO7XSV_ISmtnTkaK9xmhy1qnyc' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{"email" : "test@test.com", "password" : "123123"}'
+  ```
+- Success Response
+  - Code: `200` <br> 
+  content:  `{"refresh":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYzMjkwNjMwOSwianRpIjoiYmQyYjE4MjhlZTEyNGE3NGJlYWE2YzljODI2OTNhMDciLCJ1c2VyX2lkIjoyfQ.D_d8eDH0Usymg_qnySj-SQN8y03snbTAz_hhdebqeIo","access":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjMyODU1OTA5LCJqdGkiOiI5NWQ4ZmVmNWI1Njc0ZGYxYTJkYTRhY2YyMTVhZGM4ZCIsInVzZXJfaWQiOjJ9.My0hdB4jO1LImfxOddkwHHdHGey5V_dZVDrJ0NWU6Dg"}`
+- Error Response:
+  - Code: `400 Bad Request` <br>
+  content: `{"email":["This field is required."]}`
+
+  - Code: `401 Unauthorized`
+  content: `{"detail":"No active account found with the given credentials"}`
+
+<br>
+<br>
+
+## Refresh Token
+
+- URL: `/api/user/s`
+- Method: `POST` 
+- URL params: `Unrequired`
+- Request Header: 
+- Request Data: `{"refresh" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYzMjkwNjMwOSwianRpIjoiYmQyYjE4MjhlZTEyNGE3NGJlYWE2YzljODI2OTNhMDciLCJ1c2VyX2lkIjoyfQ.D_d8eDH0Usymg_qnySj-SQN8y03snbTAz_hhdebqeIo"}`
+- Sample Call: <br>
+  ```
+  curl --location --request POST '0.0.0.0:8000/api/user/token/refresh' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{"refresh" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYzMjkwNjUzOSwianRpIjoiYjk3MTY3NWMzYTg1NGYxNmFiOWUyZDcyZjI5N2E3N2IiLCJ1c2VyX2lkIjoyfQ.NOhi-TRXBpJL1hvtWWaDOl5zC492A58F1YLezD5bA80"}'
+  ```
+- Success Response
+  - Code: `200` <br> 
+  content:  `{"access":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjMyODU2NzA5LCJqdGkiOiI4N2RiYzc1MjQ4Yzc0ZWNlYWFlZjY3ZWJhODYzNTY3NyIsInVzZXJfaWQiOjJ9.QsQpswmbjAtFon257uG-SXihrcAwZq2KAjrCE3FPncs"}`
+- Error Response:
+  - Code: `400 Bad Request` <br>
+  content: `{"email":["This field is required."]}`
+  - Code: `401 Unauthorized`
+  content: `{"detail":"No active account found with the given credentials"}`
+
+<br>
+<br>
+
 # Questions
 ## Show Questions List
 
@@ -29,7 +109,7 @@
 - Request Header: `Unrequired`
 - Sample Call: <br>
   ``` 
-  curl --location --request GET '0.0.0.0:8000/api/board/questions
+  curl --location --request GET '0.0.0.0:8000/api/board/questions'
   ```
 - Success Response
   - code: `200` <br> 
@@ -209,6 +289,8 @@
   - code: `404 not found` <br>
     content: `{"detail":"not found."}`
 
+<br>
+<br>
 
 # like/unlike
 
@@ -226,6 +308,7 @@
   ```
   curl --location --request POST '0.0.0.0:8000/api/board/like/question' \
   --header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjMyODMzOTA0LCJqdGkiOiI3M2MzZTY4OGQ1ODg0NmMzYmVlOWYxM2Q1YTEwMDg5YSIsInVzZXJfaWQiOjF9.d0zwT-h4U3QHRrJ1TsO7XSV_ISmtnTkaK9xmhy1qnyc' \
+  --header 'Content-Type: application/json' \
   --data-raw '{"question" : "1"}'
   ```
 - success response
