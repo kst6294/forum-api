@@ -27,6 +27,7 @@ services:
       sh -c 'python manage.py check_db_connection &&
              python manage.py makemigrations --settings=config.settings.local &&
              python manage.py migrate --settings=config.settings.local &&
+             python manage.py seed board --number=13 &&
              python manage.py runserver 0.0.0.0:8000 --setting=config.settings.local'
   db:
     image: mysql

@@ -26,12 +26,12 @@ class CommentApiTests(TestCase):
     """ 댓글 API 테스트 """
 
     def setUp(self):
+        self.question = sample_question(sample_user())
         self.user = get_user_model().objects.create_user(
             'title@tests.com',
             '123123',
         )
-        self.question = sample_question(sample_user())
-
+        
         self.client = APIClient()
         self.client.force_authenticate(self.user)
 
@@ -46,7 +46,6 @@ class CommentApiTests(TestCase):
         res = self.client.post(CREATE_COMMENT_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-
 
     def test_list_comments_on_question(self):
         """ 특정한 질문에 달려있는 댓글 보여주기 """
