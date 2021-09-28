@@ -1,59 +1,82 @@
-from rest_framework import generics, status
-from rest_framework.mixins import DestroyModelMixin
+from django_filters.rest_framework import DjangoFilterBackend
+
+from rest_framework import status, viewsets
+from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
-from api.board import serializers
+from api.board.serializers import CommentSerializer, QuestionSerializer, LikeSerializer
 from api.board.models import Comment, Question, Like
 from api.board.permissions import IsOwnerOrReadOnly
+from api.board.filters import CustomSearchFilter
 
 
-class QuestionListCreateAPIView(generics.ListCreateAPIView):
+
+class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
-    serializer_class = serializers.QuestionSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
-
-    def get_queryset(self):
-
-        search = self.request.query_params
-
-        # if 문 줄일 수 있는 방법 찾아보기...
-        if search.get('title', None):
-            return self.queryset.filter(title__icontains=search['title'])
-        elif search.get('content', None):
-            return self.queryset.filter(content__icontains=search['content'])
-        else:
-            return self.queryset.all()
+    serializer_class = QuestionSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
+    filter_backends = (CustomSearchFilter, )
+    search_fiels = ('title',)
+    # filterset_fields = ('title', 'content',)
 
 
-class QuestionDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+
+# class QuestionListCreateAPIView(ListCreateAPIView):
+#     queryset = Question.objects.all()
+#     serializer_class = QuestionSerializer
+#     permission_classes = (IsAuthenticatedOrReadOnly,)
+#     search_fields = ('title', 'content',)
+
+    # def get_queryset(self):
+
+    #     search = self.request.query_params
+
+    #     # if 문 줄일 수 있는 방법 찾아보기...
+    #     if search.get('title', None):
+    #         return self.queryset.filter(title__icontains=search['title'])
+    #     elif search.get('content', None):
+    #         return self.queryset.filter(content__icontains=search['content'])
+    #     else:
+    #         return self.queryset.all()
+
+
+class QuestionDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Question.objects.all()
-    serializer_class = serializers.QuestionSerializer
+    serializer_class = QuestionSerializer
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
 
-class CommentListCreateAPIView(generics.ListCreateAPIView):
+class CommentListAPIView(ListAPIView):
     queryset = Comment.objects.all()
-    serializer_class = serializers.CommentSerializer
+    serializer_class = CommentSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        """ 질문으로 filter 한 댓글 쿼리셋 """
-        if self.kwargs['pk']:
-            return self.queryset.filter(question_id=self.kwargs['pk'])
-        return self.queryset
+        return self.queryset.filter(question_id=self.kwargs['pk'])
 
 
-class LikeCreateAPIView(generics.CreateAPIView):
+class CommentCreateAPIView(CreateAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated,)
+
+
+class LikeCreateAPIView(CreateAPIView):
     queryset = Like.objects.all()
-    serializer_class = serializers.LikeSerializer
+    serializer_class = LikeSerializer
+    permission_classes = (IsAuthenticated,)
+
+
+class LikeDestroyAPIView(DestroyAPIView):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user, question_id=self.request.data.get('question'))
-    
-    def create(self, request, *args, **kwargs):
+        return self.queryset.filter(question_id=self.kwargs['pk'])
+
+    def delete(self, request, *args, **kwargs):
         if self.queryset.exists():
             self.queryset.delete()
-            return Response(status.HTTP_204_NO_CONTENT)
-        return super().create(request, *args, **kwargs)
+            return Response({}, status=status.HTTP_204_NO_CONTENT) 
+        return Response({"detail" : "You are not liked to this question"}, status=status.HTTP_400_BAD_REQUEST)

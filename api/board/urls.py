@@ -1,13 +1,27 @@
-from django.urls import path
+from rest_framework import routers
 
-from api.board.views import CommentListCreateAPIView, LikeCreateAPIView, QuestionDetailAPIView, QuestionListCreateAPIView
+from django.urls import path, include
+
+from api.board.views import (
+    CommentCreateAPIView, 
+    CommentListAPIView,
+    LikeCreateAPIView,
+    LikeDestroyAPIView,
+    QuestionDetailAPIView, 
+    # QuestionListCreateAPIView,
+    QuestionViewSet
+)
 
 app_name = "board"
 
+router = routers.DefaultRouter(trailing_slash=False)
+
+router.register('/questions', QuestionViewSet, basename='question')
+
 urlpatterns = [
-    path('/questions', QuestionListCreateAPIView.as_view(), name="question-list-create"),
-    path('/questions/<int:pk>', QuestionDetailAPIView.as_view(), name="question-detail"),
-    path('/questions/<int:pk>/comments', CommentListCreateAPIView.as_view(), name="comment-list"),
-    path('/comments', CommentListCreateAPIView.as_view(), name="comment-create"),
+    path('', include(router.urls)),
+    path('/questions/<int:pk>/comments', CommentListAPIView.as_view(), name="comment-list"),
+    path('/comments', CommentCreateAPIView.as_view(), name="comment-create"),
     path('/like/question', LikeCreateAPIView.as_view(), name="like"),
+    path('/unlike/questions/<int:pk>', LikeDestroyAPIView.as_view(), name="unlike")
 ]

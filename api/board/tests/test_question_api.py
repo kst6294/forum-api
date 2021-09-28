@@ -9,8 +9,7 @@ from rest_framework.test import APIClient
 from api.board import models, serializers
 
 
-LIST_CREATE_QUESTION_URL = reverse('board:question-list-create')
-
+QUESTION_URL = reverse('board:question-list')
 
 
 def detail_url(question_id):
@@ -37,7 +36,7 @@ class QuestionApiTests(TestCase):
 
     def test_list_questions(self):
         """ 질문 목록 요청 """
-        
+
         models.Question.objects.create(
             user=self.user,
             title="sample title",
@@ -50,7 +49,7 @@ class QuestionApiTests(TestCase):
             content="sample content2"
         )
 
-        res = self.client.get(LIST_CREATE_QUESTION_URL)
+        res = self.client.get(QUESTION_URL)
 
         questions = models.Question.objects.all()
         serializer = serializers.QuestionSerializer(questions, many=True)
@@ -65,8 +64,8 @@ class QuestionApiTests(TestCase):
             "title" : "test title",
             "content" : "test content"
         }
-
-        res = self.client.post(LIST_CREATE_QUESTION_URL, payload)
+        
+        res = self.client.post(QUESTION_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
     
@@ -80,7 +79,7 @@ class QuestionApiTests(TestCase):
         res = self.client.get(url)
 
         serializer = serializers.QuestionSerializer(question)
-        
+
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
@@ -88,13 +87,14 @@ class QuestionApiTests(TestCase):
         """ 질문 수정 """
 
         payload = {
-            "title" : "newtitle",        }
+            "title" : "newtitle",        
+            }
 
         question = sample_question(user=self.user)
 
         url = detail_url(question.id)
 
-        res=self.client.patch(url)
+        res=self.client.patch(url, payload)
         
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -109,13 +109,13 @@ class QuestionApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_filter_question_with_keyword(self):
+    def test_filter_question_with_title(self):
         """ 질문 검색 """
 
         question1 = models.Question.objects.create(user=self.user, title="t", content="ttt")
         question2 = models.Question.objects.create(user=self.user, title="b", content="ddsafsdf")
 
-        res = self.client.get(LIST_CREATE_QUESTION_URL, {'keyword' : 't'})
+        res = self.client.get(QUESTION_URL, {'title' : f'{question1.title}'})
 
         serializer1 = serializers.QuestionSerializer(question1)
         serializer2 = serializers.QuestionSerializer(question2)
