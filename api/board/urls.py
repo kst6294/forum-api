@@ -7,8 +7,6 @@ from api.board.views import (
     CommentListAPIView,
     LikeCreateAPIView,
     LikeDestroyAPIView,
-    QuestionDetailAPIView, 
-    # QuestionListCreateAPIView,
     QuestionViewSet
 )
 

@@ -9,11 +9,10 @@ from api.board import models, serializers
 
 
 CREATE_COMMENT_URL = reverse('board:comment-create')
-# LIST_COMMENT_URL = reverse('board:question-comment-list')
+
 
 def detail_url(question_id):
     return reverse('board:comment-list', args=[question_id])
-
 
 def sample_user(email="kst6294@gmail.com", password="123123"):
     """ 샘플 질문 작성자 생성 """
@@ -31,7 +30,6 @@ class CommentApiTests(TestCase):
             'title@tests.com',
             '123123',
         )
-
         self.question = sample_question(sample_user())
 
         self.client = APIClient()

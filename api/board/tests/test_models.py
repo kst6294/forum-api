@@ -52,5 +52,3 @@ class ModelTests(TestCase):
 
         self.assertEqual(comment.content, content)
         self.assertEqual(comment.question, question)
-
-        

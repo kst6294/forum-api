@@ -21,7 +21,6 @@ class Question(models.Model):
         related_name="likes"
     )
 
-
     def __str__(self):
         return self.title
     

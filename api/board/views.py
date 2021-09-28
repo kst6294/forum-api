@@ -1,7 +1,5 @@
-from django_filters.rest_framework import DjangoFilterBackend
-
 from rest_framework import status, viewsets
-from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
@@ -11,34 +9,12 @@ from api.board.permissions import IsOwnerOrReadOnly
 from api.board.filters import CustomSearchFilter
 
 
-
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
     filter_backends = (CustomSearchFilter, )
-    search_fiels = ('title',)
-    # filterset_fields = ('title', 'content',)
-
-
-
-# class QuestionListCreateAPIView(ListCreateAPIView):
-#     queryset = Question.objects.all()
-#     serializer_class = QuestionSerializer
-#     permission_classes = (IsAuthenticatedOrReadOnly,)
-#     search_fields = ('title', 'content',)
-
-    # def get_queryset(self):
-
-    #     search = self.request.query_params
-
-    #     # if 문 줄일 수 있는 방법 찾아보기...
-    #     if search.get('title', None):
-    #         return self.queryset.filter(title__icontains=search['title'])
-    #     elif search.get('content', None):
-    #         return self.queryset.filter(content__icontains=search['content'])
-    #     else:
-    #         return self.queryset.all()
+    search_fiels = ('title', 'content')
 
 
 class QuestionDetailAPIView(RetrieveUpdateDestroyAPIView):
