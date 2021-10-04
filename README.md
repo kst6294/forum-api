@@ -1,5 +1,4 @@
 # board-api
-
 docker-compose 를 이용해 개발환경을 세팅했습니다.
 
 ### Project Run
@@ -9,7 +8,6 @@ docker-compose up
 db 연결에 수 초가 소요될 수 있습니다.
 
 테스트를 위한 데이터는 django-seed 를 통해 구현했습니다.
-
 
 
 <br>
