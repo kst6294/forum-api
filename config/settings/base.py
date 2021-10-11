@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'api.core',
     'api.user',
     'api.board',
+    'api.chat',
 
     # Django Packages
     'corsheaders',
